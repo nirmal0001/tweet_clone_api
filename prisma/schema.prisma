@@ -12,3 +12,108 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+model User {
+  id        Int       @id @default(autoincrement())
+  username  String    @unique
+  email     String    @unique
+  hashPass  String
+  lastSeen  DateTime  @default(now())
+  createdAt DateTime  @default(now())
+  profile   Profile?
+  posts     Post[]
+  comments  Comment[]
+  messages  Message[]
+  follower  Follow[]  @relation("follower")
+  following Follow[]  @relation("following")
+}
+
+model Profile {
+  id        Int       @id @default(autoincrement())
+  firstName String?
+  lastName  String?
+  DOB       DateTime?
+  bio       String?
+  avatar    String?
+  updatedAt DateTime  @updatedAt()
+  userId    Int       @unique
+  user      User      @relation(fields: [userId], references: [id])
+}
+
+model Post {
+  id        Int       @id @default(autoincrement())
+  text      String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt()
+  userId    Int
+  user      User      @relation(fields: [userId], references: [id])
+  comments  Comment[]
+  likes     Like[]
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  text      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
+  userId    Int
+  postId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  post      Post     @relation(fields: [postId], references: [id])
+}
+
+model Like {
+  id        Int      @id @default(autoincrement())
+  postId    Int
+  userId    Int
+  createdAt DateTime @default(now())
+  post      Post     @relation(fields: [postId], references: [id])
+
+  @@unique([postId, userId])
+}
+
+model Follow {
+  id          Int          @id @default(autoincrement())
+  followerId  Int
+  followingId Int
+  status      followStatus @default(pending)
+  createdAt   DateTime     @default(now())
+  follower    User         @relation("follower", fields: [followerId], references: [id])
+  following   User         @relation("following", fields: [followingId], references: [id])
+
+  @@unique([followerId, followingId])
+}
+
+model Chat {
+  id        Int       @id @default(autoincrement())
+  userAId   Int
+  userBId   Int
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt()
+  messages  Message[]
+
+  @@unique([userAId, userBId])
+}
+
+model Message {
+  id        Int           @id @default(autoincrement())
+  text      String
+  senderId  Int
+  chatId    Int
+  chat      Chat          @relation(fields: [chatId], references: [id])
+  status    messageStatus
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt()
+  sender    User          @relation(fields: [senderId], references: [id])
+}
+
+enum followStatus {
+  pending
+  accepted
+}
+
+enum messageStatus {
+  sent
+  received
+  seen
+}
