@@ -32,7 +32,7 @@ model Profile {
   id        Int       @id @default(autoincrement())
   firstName String?
   lastName  String?
-  DOB       DateTime?
+  DOB       DateTime? @db.Date
   bio       String?
   avatar    String?
   updatedAt DateTime  @updatedAt()

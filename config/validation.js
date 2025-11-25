@@ -35,3 +35,22 @@ exports.signupValidation = [
 exports.validUsername = param('username')
   .isLength({ min: 4, max: 20 })
   .withMessage('username should be between 4-20 char');
+
+exports.validProfileUpdate = [
+  body('firstName')
+    .trim()
+    .isAlpha()
+    .withMessage('number not allowed')
+    .isLength({ min: 2, max: 20 })
+    .withMessage('your name is smaller then 2 char ???? hum???')
+    .optional(),
+  body('lastName')
+    .trim()
+    .isAlpha()
+    .withMessage('number not allowed')
+    .isLength({ min: 2, max: 20 })
+    .withMessage('your name is smaller then 2 char ???? hum???')
+    .optional(),
+  body('DOB').isDate().withMessage('only takes date object').optional(),
+  body('bio').trim().isString().isLength({ min: 5, max: 120 }).optional(),
+];
