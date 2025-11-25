@@ -1,4 +1,4 @@
-const { body } = require('express-validator');
+const { body, param } = require('express-validator');
 const prisma = require('./prisma');
 
 exports.signupValidation = [
@@ -9,7 +9,7 @@ exports.signupValidation = [
     .isLength({ min: 4, max: 20 })
     .withMessage('username should be between 4-20 char')
     .custom(async (username) => {
-      const user = await prisma.user.findFirst({ where: { username } });
+      const user = await prisma.user.findUnique({ where: { username } });
       if (user) throw new Error('username already exists');
     })
     .withMessage('username already exists'),
@@ -26,8 +26,12 @@ exports.signupValidation = [
     .isEmail()
     .withMessage('email should be a valid email')
     .custom(async (email) => {
-      const emailExist = await prisma.user.findFirst({ where: { email } });
+      const emailExist = await prisma.user.findUnique({ where: { email } });
       if (emailExist) throw new Error('email already exists');
     })
     .withMessage('email already exists'),
 ];
+
+exports.validUsername = param('username')
+  .isLength({ min: 4, max: 20 })
+  .withMessage('username should be between 4-20 char');

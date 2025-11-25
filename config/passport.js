@@ -6,7 +6,7 @@ const prisma = require('./prisma');
 passport.use(
   new LocalStrategy(async (username, password, done) => {
     try {
-      const user = await prisma.user.findFirst({
+      const user = await prisma.user.findUnique({
         where: {
           username,
         },
