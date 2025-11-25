@@ -39,6 +39,7 @@ app.use(passport.session());
 const Routes = require('./routes/index');
 app.use('/auth', Routes.authRouter);
 app.use('/profile', Routes.profileRouter);
+app.use('/user', Routes.userRouter);
 
 // error handler
 app.use((err, req, res, next) => {
