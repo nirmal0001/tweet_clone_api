@@ -107,6 +107,13 @@ model Message {
   sender    User          @relation(fields: [senderId], references: [id])
 }
 
+model Session {
+  id        String   @id
+  sid       String   @unique
+  data      String
+  expiresAt   DateTime
+}
+
 enum followStatus {
   pending
   accepted
