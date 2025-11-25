@@ -7,6 +7,8 @@ const app = express();
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+
+// session + passport
 app.use(
   expressSession({
     cookie: {
@@ -24,7 +26,12 @@ app.use(
 );
 app.use(passport.initialize());
 app.use(passport.session());
+
 // route handler
+const Routes = require('./routes/index');
+app.use('/auth', Routes.authRouter);
+
+// error handler
 app.use((err, req, res, next) => {
   console.error(err); // optional logging
   return res.status(500).json({ error: err.message || err });
