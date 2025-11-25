@@ -1,9 +1,8 @@
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
-const bcrypt = require('bcrypt');
-const { PrismaClient } = require('../generated/prisma/client');
+const bcrypt = require('bcryptjs');
+const prisma = require('./prisma');
 
-const prisma = new PrismaClient();
 passport.use(
   new LocalStrategy(async (username, password, done) => {
     try {
@@ -12,9 +11,9 @@ passport.use(
           username,
         },
       });
-      if (!user) return done(null, false);
+      if (!user) return done(null, false, { msd: 'user not found' });
       const hashMach = await bcrypt.compare(password, user.hashPass);
-      if (!hashMach) return done(null, false);
+      if (!hashMach) return done(null, false, { msg: 'wrong password' });
 
       return done(null, user);
     } catch (err) {
