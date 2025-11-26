@@ -40,9 +40,10 @@ app.use(passport.session());
 const Routes = require('./routes/index');
 app.use('/auth', Routes.authRouter);
 app.use('/profile', isAuthenticated, Routes.profileRouter);
-app.use('/user', isAuthenticated, Routes.userRouter);
+app.use('/users', isAuthenticated, Routes.userRouter);
 app.use('/posts', isAuthenticated, Routes.postRouter);
 app.use('/posts/:postId/comments', isAuthenticated, Routes.commentRouter);
+app.use('/posts/:postId/likes', isAuthenticated, Routes.likeRouter);
 
 // error handler
 app.use((err, req, res, next) => {
