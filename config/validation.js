@@ -1,4 +1,4 @@
-const { body, param } = require('express-validator');
+const { body, param, query } = require('express-validator');
 const prisma = require('./prisma');
 
 exports.signupValidation = [
@@ -54,3 +54,53 @@ exports.validProfileUpdate = [
   body('DOB').isDate().withMessage('only takes date object').optional(),
   body('bio').trim().isString().isLength({ min: 5, max: 120 }).optional(),
 ];
+
+exports.validPostId = param('postId')
+  .isInt()
+  .custom(async (postId) => {
+    await prisma.post.findUniqueOrThrow({ where: { id: Number(postId) } });
+  })
+  .withMessage('post not found')
+  .optional()
+  .toInt();
+
+exports.validPostRequest = [
+  query('order')
+    .isString()
+    .isIn(['asc', 'desc'])
+    .withMessage('sort only takes asc/desc')
+    .optional()
+    .toLowerCase(),
+  query('cursor').isInt().withMessage('cursor takes an Int').optional().toInt(),
+  query('take')
+    .isInt()
+    .withMessage('takes the amount of post requested')
+    .optional()
+    .toInt(),
+];
+
+exports.validPostCreate = body('text')
+  .notEmpty()
+  .withMessage('text is required');
+
+exports.validUpdatePost = param('postId')
+  .isInt()
+  .withMessage('id Should be int')
+  .custom(async (postId, { req }) => {
+    await prisma.post.findUniqueOrThrow({
+      where: { id: Number(postId), userId: req.user.id },
+    });
+  })
+  .withMessage('post not found')
+  .toInt();
+
+exports.validDeletePost = param('postId')
+  .isInt()
+  .withMessage('id Should be int')
+  .custom(async (postId, { req }) => {
+    await prisma.post.findUniqueOrThrow({
+      where: { id: Number(postId), userId: req.user.id },
+    });
+  })
+  .withMessage('post not found')
+  .toInt();

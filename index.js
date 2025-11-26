@@ -3,6 +3,7 @@ const expressSession = require('express-session');
 const { PrismaSessionStore } = require('@quixo3/prisma-session-store');
 const { PrismaClient } = require('./generated/prisma');
 const { PrismaPg } = require('@prisma/adapter-pg');
+const { isAuthenticated } = require('./config/auth');
 const passport = require('passport');
 require('dotenv').config();
 
@@ -38,8 +39,9 @@ app.use(passport.session());
 // route handler
 const Routes = require('./routes/index');
 app.use('/auth', Routes.authRouter);
-app.use('/profile', Routes.profileRouter);
-app.use('/user', Routes.userRouter);
+app.use('/profile', isAuthenticated, Routes.profileRouter);
+app.use('/user', isAuthenticated, Routes.userRouter);
+app.use('/posts', isAuthenticated, Routes.postRouter);
 
 // error handler
 app.use((err, req, res, next) => {

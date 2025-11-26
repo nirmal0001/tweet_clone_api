@@ -1,5 +1,4 @@
 const { validationResult, matchedData } = require('express-validator');
-const { isAuthenticated } = require('../config/auth');
 const { validUsername, validProfileUpdate } = require('../config/validation');
 const multer = require('multer');
 
@@ -8,7 +7,6 @@ const upload = multer({ dest: 'uploads/' });
 
 // profile/me
 exports.me = [
-  isAuthenticated,
   async (req, res) => {
     const user = await prisma.user.findUnique({
       where: { id: req.user.id },
@@ -29,7 +27,6 @@ exports.me = [
 
 // profile/:username
 exports.getUser = [
-  isAuthenticated,
   validUsername,
   async (req, res) => {
     const result = validationResult(req);
@@ -57,7 +54,6 @@ exports.getUser = [
 // use multer
 // profile/:username/edit
 exports.editProfile = [
-  isAuthenticated,
   upload.single('avatar'),
   validProfileUpdate,
   async (req, res) => {
