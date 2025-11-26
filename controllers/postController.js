@@ -16,7 +16,13 @@ exports.getPost = [
       return res.status(401).json({ errors: result.array() });
     }
     const data = matchedData(req);
-    const post = await prisma.post.findUnique({ where: { id: data.postId } });
+    const post = await prisma.post.findUnique({
+      where: { id: data.postId },
+      include: {
+        comments: true,
+        likes: true,
+      },
+    });
     return res.json(post);
   },
 ];
@@ -30,7 +36,13 @@ exports.getPosts = [
     }
 
     const data = matchedData(req);
-    const search = { take: 20 };
+    const search = {
+      take: 20,
+      include: {
+        comments: true,
+        likes: true,
+      },
+    };
     if (data?.take) {
       search.take = data.take;
       search.skip = 1;
