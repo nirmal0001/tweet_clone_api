@@ -42,6 +42,7 @@ app.use('/auth', Routes.authRouter);
 app.use('/profile', isAuthenticated, Routes.profileRouter);
 app.use('/user', isAuthenticated, Routes.userRouter);
 app.use('/posts', isAuthenticated, Routes.postRouter);
+app.use('/posts/:postId/comments', isAuthenticated, Routes.commentRouter);
 
 // error handler
 app.use((err, req, res, next) => {

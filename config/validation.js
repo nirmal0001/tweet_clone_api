@@ -1,6 +1,7 @@
 const { body, param, query } = require('express-validator');
 const prisma = require('./prisma');
 
+// login/signup validations
 exports.signupValidation = [
   body('username')
     .trim()
@@ -36,6 +37,7 @@ exports.validUsername = param('username')
   .isLength({ min: 4, max: 20 })
   .withMessage('username should be between 4-20 char');
 
+// profile validations
 exports.validProfileUpdate = [
   body('firstName')
     .trim()
@@ -55,6 +57,7 @@ exports.validProfileUpdate = [
   body('bio').trim().isString().isLength({ min: 5, max: 120 }).optional(),
 ];
 
+// post validations
 exports.validPostId = param('postId')
   .isInt()
   .custom(async (postId) => {
@@ -104,3 +107,17 @@ exports.validDeletePost = param('postId')
   })
   .withMessage('post not found')
   .toInt();
+
+// comments validation
+exports.validMessageId = param('commentId')
+  .isInt()
+  .custom(async (value, { req }) => {
+    await prisma.comment.findUniqueOrThrow({
+      where: { id: Number(value), userId: req.user.id },
+    });
+  })
+  .withMessage('comment does not exists')
+  .toInt();
+exports.validCommentCreate = body('text')
+  .notEmpty()
+  .withMessage('text is required');
