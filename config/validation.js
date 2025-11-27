@@ -121,3 +121,25 @@ exports.validMessageId = param('commentId')
 exports.validCommentCreate = body('text')
   .notEmpty()
   .withMessage('text is required');
+
+// chat validation
+exports.validReceiverId = param('receiverId')
+  .isInt()
+  .custom(async (value, { req }) => {
+    if (Number(value) === req.user.id) throw new Error('');
+
+    await prisma.user.findUniqueOrThrow({
+      where: { id: Number(value) },
+    });
+  })
+  .withMessage('user does not exists')
+  .toInt();
+
+exports.validChatId = param('chatId')
+  .isInt()
+  .custom(
+    async (id) =>
+      await prisma.chat.findUniqueOrThrow({ where: { id: Number(id) } })
+  )
+  .withMessage('chat does not exists')
+  .toInt();

@@ -44,6 +44,7 @@ app.use('/users', isAuthenticated, Routes.userRouter);
 app.use('/posts', isAuthenticated, Routes.postRouter);
 app.use('/posts/:postId/comments', isAuthenticated, Routes.commentRouter);
 app.use('/posts/:postId/likes', isAuthenticated, Routes.likeRouter);
+app.use('/chats', isAuthenticated, Routes.chatRouter);
 
 // error handler
 app.use((err, req, res, next) => {

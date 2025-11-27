@@ -95,6 +95,7 @@ model Chat {
   @@unique([userAId, userBId])
 }
 
+// add reply to in future
 model Message {
   id        Int           @id @default(autoincrement())
   text      String
