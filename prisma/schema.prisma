@@ -102,7 +102,7 @@ model Message {
   senderId  Int
   chatId    Int
   chat      Chat          @relation(fields: [chatId], references: [id])
-  status    messageStatus
+  status    messageStatus @default(sent)
   createdAt DateTime      @default(now())
   updatedAt DateTime      @updatedAt()
   sender    User          @relation(fields: [senderId], references: [id])

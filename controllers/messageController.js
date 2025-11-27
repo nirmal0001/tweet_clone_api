@@ -1,74 +1,87 @@
 const { validationResult, matchedData } = require('express-validator');
 const {
-  validPostId,
-  validCommentCreate,
-  validCommentId,
+  validChatId,
+  validMessageText,
+  validMessageId,
 } = require('../config/validation');
 const prisma = require('../config/prisma');
 
-exports.getComments = [
-  validPostId,
+exports.getMessages = [
+  validChatId,
   async (req, res) => {
     const result = validationResult(req);
     if (!result.isEmpty()) {
       return res.status(401).json({ errors: result.array() });
     }
-    const postId = matchedData(req).postId;
-    const comments = await prisma.comment.findMany({
+    const chatId = matchedData(req).chatId;
+    const chat = await prisma.chat.findUnique({
       where: {
-        postId: postId,
+        id: chatId,
       },
     });
-    return res.json(comments);
+    const user = req.user.id;
+    if (chat.userAId == user || chat.userBId == user) {
+      const messages = await prisma.message.findMany({
+        where: { chatId: chatId },
+      });
+      return res.json(messages);
+    }
+    return res.status(401).json({ error: { msg: 'chat does not exists' } });
   },
 ];
-exports.createComment = [
-  validPostId,
-  validCommentCreate,
+exports.createMessage = [
+  validChatId,
+  validMessageText,
   async (req, res) => {
     const result = validationResult(req);
     if (!result.isEmpty()) {
       return res.status(401).json({ errors: result.array() });
     }
     const data = matchedData(req);
-    data.userId = req.user.id;
-    const comment = await prisma.comment.create({ data });
-    return res.json(comment);
+    const senderId = req.user.id;
+    const message = await prisma.message.create({
+      data: {
+        ...data,
+        senderId,
+        status: 'sent',
+      },
+    });
+    return res.json(message);
   },
 ];
-exports.updateComment = [
-  validCommentId,
-  validCommentCreate,
+exports.updateMessage = [
+  validMessageId,
+  validMessageText,
   async (req, res) => {
     const result = validationResult(req);
     if (!result.isEmpty()) {
       return res.status(401).json({ errors: result.array() });
     }
     const data = matchedData(req);
-    const comments = await prisma.comment.update({
+    const message = await prisma.message.update({
       where: {
-        id: data.commentId,
+        id: data.messageId,
       },
       data: {
         text: data.text,
       },
     });
-    return res.json(comments);
+    return res.json(message);
   },
 ];
-exports.deleteComment = [
-  validCommentId,
+exports.deleteMessage = [
+  validMessageId,
   async (req, res) => {
     const result = validationResult(req);
     if (!result.isEmpty()) {
       return res.status(401).json({ errors: result.array() });
     }
     const data = matchedData(req);
-    const comment = await prisma.comment.delete({
+    const message = await prisma.message.delete({
       where: {
-        id: data.commentId,
+        id: data.messageId,
       },
     });
-    return res.json(comment);
+    return res.json(message);
   },
 ];

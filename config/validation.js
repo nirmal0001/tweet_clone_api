@@ -109,7 +109,7 @@ exports.validDeletePost = param('postId')
   .toInt();
 
 // comments validation
-exports.validMessageId = param('commentId')
+exports.validCommentId = param('commentId')
   .isInt()
   .custom(async (value, { req }) => {
     await prisma.comment.findUniqueOrThrow({
@@ -142,4 +142,19 @@ exports.validChatId = param('chatId')
       await prisma.chat.findUniqueOrThrow({ where: { id: Number(id) } })
   )
   .withMessage('chat does not exists')
+  .toInt();
+
+// message validation
+exports.validMessageText = body('text')
+  .notEmpty()
+  .withMessage('text is required');
+
+exports.validMessageId = param('messageId')
+  .isInt()
+  .custom(async (value, { req }) => {
+    await prisma.message.findUniqueOrThrow({
+      where: { id: Number(value), senderId: req.user.id },
+    });
+  })
+  .withMessage('message does not exists')
   .toInt();
