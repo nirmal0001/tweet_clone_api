@@ -1,9 +1,7 @@
 const { validationResult, matchedData } = require('express-validator');
 const { validUsername, validProfileUpdate } = require('../config/validation');
-const multer = require('multer');
-
 const prisma = require('../config/prisma');
-const upload = multer({ dest: 'uploads/' });
+const { upload } = require('../config/multer');
 
 // profile/me
 exports.me = [
