@@ -158,3 +158,52 @@ exports.validMessageId = param('messageId')
   })
   .withMessage('message does not exists')
   .toInt();
+
+// follower validation
+exports.validFollowId = param('followId')
+  .isInt()
+  .custom(async (value, { req }) => {
+    const follow = await prisma.follow.findMany({
+      where: {
+        id: Number(value),
+        OR: [{ followerId: req.user.id }, { followingId: req.user.id }],
+      },
+    });
+    if (follow.length < 1) {
+      throw new Error('this');
+    }
+  })
+  .withMessage('followId does not exists')
+  .toInt();
+
+exports.validFollowingId = param('followId')
+  .isInt()
+  .custom(async (value, { req }) => {
+    await prisma.follow.findUniqueOrThrow({
+      where: {
+        id: Number(value),
+        followingId: req.user.id,
+      },
+    });
+  })
+  .withMessage('followId does not exists')
+  .toInt();
+
+exports.validFollowerId = body('followingId')
+  .isInt()
+  .withMessage('followingId should be Int')
+  .custom(async (value, { req }) => {
+    if (Number(value) == req.user.id) {
+      throw new Error('error');
+    }
+    await prisma.user.findUniqueOrThrow({
+      where: {
+        id: Number(value),
+      },
+    });
+  })
+  .withMessage('user does not exists')
+  .toInt();
+exports.validFollowerStatus = body('status')
+  .equals('accepted')
+  .withMessage('status can only be pending or accepted');

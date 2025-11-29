@@ -1,6 +1,7 @@
 const authRouter = require('./authRouter');
 const chatRouter = require('./chatRouter');
 const commentRouter = require('./commentRouter');
+const followRouter = require('./followRouter');
 const likeRouter = require('./likeRouter');
 const messageRouter = require('./messageRouter');
 const postRouter = require('./postRouter.');
@@ -16,4 +17,5 @@ module.exports = {
   likeRouter,
   chatRouter,
   messageRouter,
+  followRouter,
 };
