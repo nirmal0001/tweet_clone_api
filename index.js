@@ -5,11 +5,17 @@ const { PrismaClient } = require('./generated/prisma');
 const { PrismaPg } = require('@prisma/adapter-pg');
 const { isAuthenticated } = require('./config/auth');
 const passport = require('passport');
+const cors = require('cors');
 require('dotenv').config();
 
 require('./config/passport');
 const app = express();
 
+app.use(
+  cors({
+    origin: '*',
+  })
+);
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
